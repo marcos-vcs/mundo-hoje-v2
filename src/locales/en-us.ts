@@ -1,4 +1,5 @@
 export default {
-  welcome: "Welcome",
-  goodbye: "Goodbye"
+  inicio: "Start",
+  favoritos: "Favorites",
+  configuracoes: "Settings",
 }

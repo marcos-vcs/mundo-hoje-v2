@@ -1,5 +1,6 @@
 // src/locales/es-es.ts
 export default {
-  welcome: "Bienvenido",
-  goodbye: "Adiós"
+  inicio: "Comenzar",
+  favoritos: "Favoritos",
+  configuracoes: "Configuraciones",
 }
