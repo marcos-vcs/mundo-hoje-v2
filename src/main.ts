@@ -1,8 +1,11 @@
-import { createApp } from 'vue'
-import App from './App.vue'
+import { createApp } from 'vue';
+import App from './App.vue';
 import router from './router';
-
+import { createI18n } from 'vue-i18n';
 import { IonicVue } from '@ionic/vue';
+import ptBr from './locales/pt-br'
+import enUs from './locales/en-us'
+import esEs from './locales/es-es'
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
@@ -34,7 +37,48 @@ import '@ionic/vue/css/palettes/dark.system.css';
 /* Theme variables */
 import './theme/variables.css';
 
+const messages = {
+  'pt-br': ptBr,
+  'en-us': enUs,
+  'es-es': esEs
+}
+
+const supportedLocales = ['pt-br', 'en-us', 'es-es']
+
+function getBrowserLocale() {
+  const navLang = navigator.language.toLowerCase()
+  if (supportedLocales.includes(navLang)) {
+    return navLang
+  }
+  const prefix = navLang.split('-')[0]
+  const found = supportedLocales.find(l => l.startsWith(prefix))
+  if (found) return found
+  return 'en-us' // padrão
+}
+
+function getSavedLocale(): string | null {
+  return localStorage.getItem('locale')
+}
+
+function setSavedLocale(locale: string) {
+  localStorage.setItem('locale', locale)
+}
+
+const locale = getSavedLocale() ?? (() => {
+  const browserLocale = getBrowserLocale()
+  setSavedLocale(browserLocale)
+  return browserLocale
+})()
+
+const i18n = createI18n({
+  legacy: false, // para Composition API (vue 3)
+  locale,
+  fallbackLocale: 'en-us',
+  messages
+})
+
 const app = createApp(App)
+  .use(i18n)
   .use(IonicVue)
   .use(router);
 
