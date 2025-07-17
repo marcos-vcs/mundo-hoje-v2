@@ -10,12 +10,12 @@
         <ion-toolbar>
           <ion-title size="large">
             Tab 1
-          {{ $t('welcome') }}
           </ion-title>
         </ion-toolbar>
       </ion-header>
 
       <ExploreContainer name="Tab 1 page" />
+      {{ $t('welcome') }}
     </ion-content>
   </ion-page>
 </template>
