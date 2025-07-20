@@ -3,6 +3,7 @@ import App from './App.vue';
 import router from './router';
 import { createI18n } from 'vue-i18n';
 import { IonicVue } from '@ionic/vue';
+import { key, store } from './store/index';
 import ptBr from './locales/pt-br'
 import enUs from './locales/en-us'
 import esEs from './locales/es-es'
@@ -73,11 +74,13 @@ const locale = getSavedLocale() ?? (() => {
 const i18n = createI18n({
   legacy: false, // para Composition API (vue 3)
   locale,
-  fallbackLocale: 'en-us',
-  messages
+  fallbackLocale: 'pt-br',
+  messages,
+  defaultLocale: 'pt-br',
 })
 
 const app = createApp(App)
+  .use(store, key)
   .use(i18n)
   .use(IonicVue)
   .use(router);

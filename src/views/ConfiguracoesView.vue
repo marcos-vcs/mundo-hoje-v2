@@ -29,6 +29,24 @@
             </ion-item>
           </ion-col>
         </ion-row>
+
+        <!-- Idioma -->
+        <ion-row>
+          <ion-col size="12" class="ion-text-center ion-padding">
+            <ion-item lines="none" class="br-15 -mt-20">
+              <ion-label>{{ $t("idioma") }}:</ion-label>
+              <ion-select
+                :value="idioma"
+                @ionChange="mudouIdioma($event)"
+                slot="end"
+              >
+                <ion-select-option value="pt-br">{{ $t("ptbr") }}</ion-select-option>
+                <ion-select-option value="en-us">{{ $t("enus") }}</ion-select-option>
+                <ion-select-option value="es-es">{{ $t("eses") }}</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </ion-col>
+        </ion-row>
       </ion-grid>
     </ion-content>
   </ion-page>
@@ -43,11 +61,17 @@ import {
   IonContent,
   ToggleCustomEvent,
   IonToggle,
+  IonSelect,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
+import {configuracoesMixin} from "@/mixins/configuracoesMixin";
+import { useStore } from "@/store";
 
 export default defineComponent({
   name: "ConfiguracoesView",
+  mixins: [
+    configuracoesMixin,
+  ],
   components: {
     IonPage,
     IonHeader,
@@ -55,14 +79,19 @@ export default defineComponent({
     IonTitle,
     IonContent,
     IonToggle,
+    IonSelect,
   },
   data() {
     return {
       modoDark: false,
+      idioma: 'pt-br',
+      store: useStore(),
     };
   },
   mounted() {
     this.carregaModoDark();
+    this.modoDark = this.store.state.configuracoes.modoDark;
+    this.carregarIdioma();
   },
   computed: {
     modoDarkText() {
@@ -78,22 +107,19 @@ export default defineComponent({
         this.modoDark
       );
     },
-    carregaModoDark() {
-      if (!localStorage.getItem("modoDark")) {
-        localStorage.setItem(
-          "modoDark",
-          window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "true"
-            : "false"
-        );
+    mudouIdioma(event: any) {
+      this.idioma = event.detail.value;
+      localStorage.setItem("idioma", this.idioma.toLowerCase());
+      this.$i18n.locale = this.idioma;
+    },
+    carregarIdioma() {
+      if (!localStorage.getItem("idioma")) {
+        localStorage.setItem("idioma", window.navigator.language.toLowerCase() || "pt-br");
       }
 
-      const modoDark = localStorage.getItem("modoDark");
-      this.modoDark = modoDark === "true";
-      document.documentElement.classList.toggle(
-        "ion-palette-dark",
-        this.modoDark
-      );
+      const idioma = (localStorage.getItem("idioma") || "pt-br").toLowerCase();
+      this.$i18n.locale = idioma;
+      this.idioma = idioma;
     },
   },
 });
@@ -103,4 +129,8 @@ export default defineComponent({
 .br-15 {
   border-radius: 15px;
 }
+.-mt-20 {
+  margin-top: -20px;
+}
+
 </style>
