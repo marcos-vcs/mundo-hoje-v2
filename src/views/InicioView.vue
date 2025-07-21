@@ -14,11 +14,11 @@
       </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true">
-      <CardNoticia
-        v-for="item in noticia.items"
-        :key="item.id"
-        :item="item"
-      />
+      <ion-refresher slot="fixed" @ionRefresh="reset">
+        <ion-refresher-content />
+      </ion-refresher>
+
+      <CardNoticia v-for="item in noticia.items" :key="item.id" :item="item" />
 
       <ion-infinite-scroll @ionInfinite="ionInfinite">
         <ion-infinite-scroll-content></ion-infinite-scroll-content>
@@ -39,6 +39,8 @@ import {
   IonIcon,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
+  IonRefresher,
+  IonRefresherContent,
 } from "@ionic/vue";
 import { refreshOutline } from "ionicons/icons";
 import { defineComponent } from "vue";
@@ -60,7 +62,9 @@ export default defineComponent({
     IonButton,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
-    CardNoticia
+    CardNoticia,
+    IonRefresher,
+    IonRefresherContent,
   },
   data() {
     return {
@@ -183,12 +187,17 @@ export default defineComponent({
         return {} as Imagem;
       }
     },
-    reset() {
-      this.noticia = {} as Noticia;
-      this.page = 1;
-      this.loading = false;
-      this.buscarNoticias();
-    }
+    reset(event: any) {
+      setTimeout(() => {
+        this.noticia = {} as Noticia;
+        this.page = 1;
+        this.loading = false;
+        this.buscarNoticias();
+        if (event) {
+          event.target.complete();
+        }
+      }, 100);
+    },
   },
 });
 </script>
