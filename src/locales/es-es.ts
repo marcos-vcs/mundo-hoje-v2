@@ -11,4 +11,5 @@ export default {
   eses: "Español",
   mundo_hoje: "Mundo Hoy",
   buscar: "Buscar",
+  publicado_em: "Publicado en",
 }

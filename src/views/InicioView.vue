@@ -14,31 +14,11 @@
       </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">
-            {{ $t("inicio") }}
-          </ion-title>
-        </ion-toolbar>
-      </ion-header>
-
-      <ion-card v-for="item in noticia.items" :key="item.id">
-        <ion-card-header>
-          <ion-card-title>{{ item.titulo }}</ion-card-title>
-          <ion-card-subtitle>{{ item.data_publicacao }}</ion-card-subtitle>
-        </ion-card-header>
-        <ion-card-content>
-          <p>{{ item.introducao }}</p>
-          <img
-            v-if="item.imagens.image_intro"
-            :src="item.imagens.image_intro"
-            alt="Imagem de introdução"
-          />
-          <p>
-            <a :href="item.link" target="_blank">{{ $t("leia_mais") }}</a>
-          </p>
-        </ion-card-content>
-      </ion-card>
+      <CardNoticia
+        v-for="item in noticia.items"
+        :key="item.id"
+        :item="item"
+      />
 
       <ion-infinite-scroll @ionInfinite="ionInfinite">
         <ion-infinite-scroll-content></ion-infinite-scroll-content>
@@ -65,6 +45,7 @@ import { defineComponent } from "vue";
 import ibgeNoticeService from "@/services/ibgeNoticeService";
 import { Noticia } from "@/models/noticia";
 import { Imagem } from "@/models/imagem";
+import CardNoticia from "@/components/CardNoticia.vue";
 
 export default defineComponent({
   name: "InicioView",
@@ -79,6 +60,7 @@ export default defineComponent({
     IonButton,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
+    CardNoticia
   },
   data() {
     return {
