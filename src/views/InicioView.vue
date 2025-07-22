@@ -18,9 +18,11 @@
         <ion-refresher-content />
       </ion-refresher>
 
+      <CarroselCotacoes :cotacoes="cotacoes" />
       <CardNoticia v-for="item in noticia.items" :key="item.id" :item="item" />
+      <NotFound :title="$t('notfound_title')" :message="$t('notfound_description')" v-if="!noticia.items" />
 
-      <ion-infinite-scroll @ionInfinite="ionInfinite">
+      <ion-infinite-scroll v-if="noticia.items" @ionInfinite="ionInfinite">
         <ion-infinite-scroll-content></ion-infinite-scroll-content>
       </ion-infinite-scroll>
     </ion-content>
@@ -48,6 +50,10 @@ import ibgeNoticeService from "@/services/ibgeNoticeService";
 import { Noticia } from "@/models/noticia";
 import { Imagem } from "@/models/imagem";
 import CardNoticia from "@/components/CardNoticia.vue";
+import CarroselCotacoes from "@/components/CarroselCotacoes.vue";
+import economyService from "@/services/economyService";
+import { Coins } from "@/models/coins";
+import NotFound from "@/components/NotFound.vue";
 
 export default defineComponent({
   name: "InicioView",
@@ -65,11 +71,14 @@ export default defineComponent({
     CardNoticia,
     IonRefresher,
     IonRefresherContent,
+    CarroselCotacoes,
+    NotFound,
   },
   data() {
     return {
       refreshOutline,
       noticia: {} as Noticia,
+      cotacoes: {} as Coins,
       qtd: 20,
       page: 1,
       loading: false,
@@ -77,6 +86,7 @@ export default defineComponent({
   },
   mounted() {
     this.buscarNoticias();
+    this.buscarCotacoes();
   },
   methods: {
     buscarNoticias() {
@@ -193,11 +203,21 @@ export default defineComponent({
         this.page = 1;
         this.loading = false;
         this.buscarNoticias();
+        this.buscarCotacoes();
         if (event) {
           event.target.complete();
         }
       }, 100);
     },
+    async buscarCotacoes() {
+      try {
+        const response = await economyService.getCoins();
+        this.cotacoes = response.data;
+      } catch (error) {
+        console.error("Erro ao buscar cotações:", error);
+      }
+    },
+
   },
 });
 </script>

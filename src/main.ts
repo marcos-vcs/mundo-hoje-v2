@@ -38,6 +38,9 @@ import '@ionic/vue/css/palettes/dark.class.css';
 /* Theme variables */
 import './theme/variables.css';
 
+/* Global styles */
+import './theme/global.css';
+
 const messages = {
   'pt-br': ptBr,
   'en-us': enUs,

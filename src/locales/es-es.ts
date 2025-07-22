@@ -12,4 +12,10 @@ export default {
   mundo_hoje: "Mundo Hoy",
   buscar: "Buscar",
   publicado_em: "Publicado en",
-}
+  equivale: "equivale a",
+  ultima_atualizacao: "Última actualización",
+  variacao: "Variación",
+  notfound_title: "No hay novedades aquí :(",
+  notfound_description:
+    "Inténtelo nuevamente más tarde o verifique su conexión a Internet.",
+};

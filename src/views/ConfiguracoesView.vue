@@ -47,6 +47,9 @@
             </ion-item>
           </ion-col>
         </ion-row>
+
+        <!-- Icone not found (adicionar depois nos créditos) -->
+         <!-- <a href="https://www.flaticon.com/free-icons/page-not-found" title="page not found icons">Page not found icons created by Roundicons Premium - Flaticon</a> -->
       </ion-grid>
     </ion-content>
   </ion-page>
@@ -126,11 +129,4 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.br-15 {
-  border-radius: 15px;
-}
-.-mt-20 {
-  margin-top: -20px;
-}
-
 </style>

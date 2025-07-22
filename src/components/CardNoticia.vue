@@ -74,6 +74,7 @@ export default defineComponent({
     width: 100%;
     height: 180px;
     border-radius: 8px;
+    object-fit: cover;
 }
 .introducao {
     font-size: 14px;
