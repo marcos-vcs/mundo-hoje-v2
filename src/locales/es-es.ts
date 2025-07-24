@@ -18,4 +18,5 @@ export default {
   notfound_title: "No hay novedades aquí :(",
   notfound_description:
     "Inténtelo nuevamente más tarde o verifique su conexión a Internet.",
+  detalhes_noticia: "Detalles de la Noticia",
 };

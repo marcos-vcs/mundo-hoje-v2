@@ -1,5 +1,5 @@
 <template>
-  <ion-card>
+  <ion-card @click="onClickCard">
     <ion-card-header>
       <ion-card-title>{{ item.titulo }}</ion-card-title>
     </ion-card-header>
@@ -50,6 +50,7 @@ export default defineComponent({
       loading: true,
     };
   },
+  emits: ["clickCard"],
   props: {
     item: {
       type: Object as PropType<ItemNoticia>,
@@ -60,7 +61,12 @@ export default defineComponent({
     publicadoEmSubtitle(): string {
       return `${this.$t("publicado_em")}: ${this.item.data_publicacao}`;
     }
-  }
+  },
+  methods: {
+    onClickCard() {
+      this.$emit("clickCard", this.item);
+    }
+  },
 });
 </script>
 

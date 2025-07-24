@@ -19,8 +19,21 @@
       </ion-refresher>
 
       <CarroselCotacoes :cotacoes="cotacoes" />
-      <CardNoticia v-for="item in noticia.items" :key="item.id" :item="item" />
-      <NotFound :title="$t('notfound_title')" :message="$t('notfound_description')" v-if="!noticia.items" />
+      <CardNoticia
+        v-for="item in noticia.items"
+        :key="item.id"
+        :item="item"
+        @clickCard="detalhesNoticia"
+      />
+      <DetalhesNoticiaModal
+        :isOpen="detalhesNoticiaModalEhAberto"
+        @setOpen="(e) => (detalhesNoticiaModalEhAberto = e)"
+      />
+      <NotFound
+        :title="$t('notfound_title')"
+        :message="$t('notfound_description')"
+        v-if="!noticia.items"
+      />
 
       <ion-infinite-scroll v-if="noticia.items" @ionInfinite="ionInfinite">
         <ion-infinite-scroll-content></ion-infinite-scroll-content>
@@ -54,6 +67,8 @@ import CarroselCotacoes from "@/components/CarroselCotacoes.vue";
 import economyService from "@/services/economyService";
 import { Coins } from "@/models/coins";
 import NotFound from "@/components/NotFound.vue";
+import DetalhesNoticiaModal from "@/components/DetalhesNoticiaModal.vue";
+import { ItemNoticia } from "@/models/itemNoticia";
 
 export default defineComponent({
   name: "InicioView",
@@ -73,6 +88,7 @@ export default defineComponent({
     IonRefresherContent,
     CarroselCotacoes,
     NotFound,
+    DetalhesNoticiaModal,
   },
   data() {
     return {
@@ -82,6 +98,8 @@ export default defineComponent({
       qtd: 20,
       page: 1,
       loading: false,
+      detalhesNoticiaModalEhAberto: false,
+      itemNoticiaSelecionado: {} as ItemNoticia,
     };
   },
   mounted() {
@@ -217,7 +235,10 @@ export default defineComponent({
         console.error("Erro ao buscar cotações:", error);
       }
     },
-
+    detalhesNoticia(item: ItemNoticia) {
+      this.itemNoticiaSelecionado = item;
+      this.detalhesNoticiaModalEhAberto = true;
+    },
   },
 });
 </script>
