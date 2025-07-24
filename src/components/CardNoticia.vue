@@ -4,20 +4,33 @@
       <ion-card-title>{{ item.titulo }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-    <div class="imagem-container">
-      <ion-skeleton-text
-        v-if="loading"
-        animated
-        class="imagem-card"
-      />
-      <img
-        v-show="!loading"
-        :src="item.imagens.image_intro"
-        class="imagem-card"
-        @load="loading = false"
-      />
-    </div>
-      <ion-card-subtitle class="subtitle">{{ publicadoEmSubtitle }}</ion-card-subtitle>
+      <div class="imagem-container">
+        <ion-skeleton-text v-if="loading" animated class="imagem-card" />
+        <img
+          v-show="!loading"
+          :src="item.imagens.image_intro"
+          class="imagem-card"
+          @load="loading = false"
+        />
+      </div>
+      <ion-card-subtitle>
+        <div class="subtitle-container">
+          <div class="subtitle">
+            {{ publicadoEmSubtitle }}
+          </div>
+          <div class="botoes-card">
+            <ion-buttons slot="end">
+              <ion-button class="btn-size" @click.stop="compartilharNoticia">
+                <ion-icon
+                  class="compartilhar-tamanho"
+                  :icon="shareSocialOutline"
+                  slot="icon-only"
+                />
+              </ion-button>
+            </ion-buttons>
+          </div>
+        </div>
+      </ion-card-subtitle>
       <p class="introducao">{{ item.introducao }}</p>
     </ion-card-content>
   </ion-card>
@@ -26,6 +39,8 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 import { ItemNoticia } from "@/models/itemNoticia";
+import { shareSocialOutline } from "ionicons/icons";
+
 import {
   IonCard,
   IonCardContent,
@@ -48,6 +63,7 @@ export default defineComponent({
   data() {
     return {
       loading: true,
+      shareSocialOutline,
     };
   },
   emits: ["clickCard"],
@@ -60,35 +76,71 @@ export default defineComponent({
   computed: {
     publicadoEmSubtitle(): string {
       return `${this.$t("publicado_em")}: ${this.item.data_publicacao}`;
-    }
+    },
   },
   methods: {
     onClickCard() {
       this.$emit("clickCard", this.item);
-    }
+    },
+    compartilharNoticia() {
+      const url = this.item.link;
+      if (navigator.share) {
+        navigator
+          .share({
+            title: this.item.titulo,
+            text: this.item.introducao,
+            url: url,
+          })
+          .catch((error) => console.error("Erro ao compartilhar:", error));
+      } else {
+        console.warn("Compartilhamento não suportado neste navegador.");
+      }
+    },
   },
 });
 </script>
 
 <style scoped>
+.btn-size {
+  width: 25px !important;
+  height: 25px !important;
+}
+
+.compartilhar-tamanho {
+  font-size: 20px !important;
+}
+
+.subtitle-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.botoes-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
 .imagem-container {
-    width: 100%;
-    height: 180px;
-    position: relative;
+  width: 100%;
+  height: 180px;
+  position: relative;
 }
 .imagem-card {
-    width: 100%;
-    height: 180px;
-    border-radius: 8px;
-    object-fit: cover;
+  width: 100%;
+  height: 180px;
+  border-radius: 8px;
+  object-fit: cover;
 }
 .introducao {
-    font-size: 14px;
-    margin-top: 8px;
+  font-size: 14px;
+  margin-top: 8px;
 }
 
 .subtitle {
-    font-size: 12px;
-    margin-top: 4px;
+  font-size: 12px;
+  margin-top: 4px;
 }
 </style>
