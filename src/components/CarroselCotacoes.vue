@@ -25,7 +25,11 @@
                   1 {{ cotacao.name.split("/")[0].toLowerCase() }}
                   {{ $t("equivale") }}:
                 </div>
-                <strong>{{ toCurrency(parseFloat(cotacao.bid)) }}</strong>
+                <div class="ion-text-center valor-atual">
+                  <strong>
+                    {{ toCurrency(parseFloat(cotacao.bid)) }}
+                  </strong>
+                </div>
               </ion-col>
             </ion-row>
           </ion-grid>
@@ -53,13 +57,13 @@
             </ion-row>
           </ion-grid>
 
-          <ion-grid :fixed="true" style="margin-top: -10px">
-            <ion-row class="ion-text-center">
+          <ion-grid :fixed="true">
+            <ion-row>
               <ion-col class="fw-bold ultima-atualizacao">
-                <div class="fs-10">{{ $t("ultima_atualizacao") }}:</div>
-                <span class="fs-12">
+                <div>{{ $t("ultima_atualizacao") }}:</div>
+                <div>
                   {{ formatDate(cotacao.create_date) }}
-                </span>
+                </div>
               </ion-col>
             </ion-row>
           </ion-grid>
@@ -170,6 +174,11 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.valor-atual {
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
 .pin-icon {
   position: absolute;
   margin: -20px -25px 0 0;
@@ -200,6 +209,8 @@ export default defineComponent({
 .ultima-atualizacao {
   margin-top: 5px;
   font-size: 12px;
+  text-align: center;
+  margin: auto;
 }
 
 .variacao {

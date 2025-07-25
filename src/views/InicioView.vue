@@ -19,6 +19,11 @@
       </ion-refresher>
 
       <CarroselCotacoes :cotacoes="cotacoes" />
+
+      <div class="divisao">
+        <ion-item-divider></ion-item-divider>
+      </div>
+      
       <CardNoticia
         v-for="item in noticia.items"
         :key="item.id"
@@ -27,6 +32,9 @@
       />
       <DetalhesNoticiaModal
         :isOpen="detalhesNoticiaModalEhAberto"
+        :item="itemNoticiaSelecionado"
+        :loading="loadingDetalhes"
+        :resultadoScraping="resultadoScrapingNoticiaSelecionada"
         @setOpen="(e) => (detalhesNoticiaModalEhAberto = e)"
       />
       <NotFound
@@ -56,6 +64,7 @@ import {
   IonInfiniteScrollContent,
   IonRefresher,
   IonRefresherContent,
+  IonItemDivider,
 } from "@ionic/vue";
 import { refreshOutline } from "ionicons/icons";
 import { defineComponent } from "vue";
@@ -69,6 +78,8 @@ import { Coins } from "@/models/coins";
 import NotFound from "@/components/NotFound.vue";
 import DetalhesNoticiaModal from "@/components/DetalhesNoticiaModal.vue";
 import { ItemNoticia } from "@/models/itemNoticia";
+import { ScrapingNoticia } from "@/models/scrapingNoticia";
+import { SplashScreen } from '@capacitor/splash-screen';
 
 export default defineComponent({
   name: "InicioView",
@@ -89,6 +100,7 @@ export default defineComponent({
     CarroselCotacoes,
     NotFound,
     DetalhesNoticiaModal,
+    IonItemDivider,
   },
   data() {
     return {
@@ -100,15 +112,18 @@ export default defineComponent({
       loading: false,
       detalhesNoticiaModalEhAberto: false,
       itemNoticiaSelecionado: {} as ItemNoticia,
+      resultadoScrapingNoticiaSelecionada: {} as ScrapingNoticia,
+      loadingDetalhes: false,
     };
   },
-  mounted() {
-    this.buscarNoticias();
-    this.buscarCotacoes();
+  async mounted() {
+    await this.buscarNoticias();
+    await this.buscarCotacoes();
+    SplashScreen.hide();
   },
   methods: {
-    buscarNoticias() {
-      ibgeNoticeService
+    async buscarNoticias() {
+      await ibgeNoticeService
         .getNotices(this.qtd, this.page)
         .then((response) => {
           const noticiasData = response;
@@ -236,14 +251,30 @@ export default defineComponent({
       }
     },
     detalhesNoticia(item: ItemNoticia) {
-      this.itemNoticiaSelecionado = item;
+      this.loadingDetalhes = true;
       this.detalhesNoticiaModalEhAberto = true;
+      this.itemNoticiaSelecionado = item;
+      ibgeNoticeService.scrapingNotice(item.link).then((response) => {
+        if (response) {
+          this.resultadoScrapingNoticiaSelecionada = response;
+        }
+      })
+      .finally(() => {
+        this.loadingDetalhes = false;
+      });
     },
   },
 });
 </script>
 
 <style scoped>
+.divisao {
+  width: 90%;
+  margin: auto;
+  margin-top: -10px;
+  margin-bottom: 20px;
+}
+
 .logo {
   width: 30px;
   height: 30px;

@@ -22,7 +22,6 @@
             <ion-buttons slot="end">
               <ion-button class="btn-size" @click.stop="compartilharNoticia">
                 <ion-icon
-                  class="compartilhar-tamanho"
                   :icon="shareSocialOutline"
                   slot="icon-only"
                 />
@@ -102,18 +101,16 @@ export default defineComponent({
 
 <style scoped>
 .btn-size {
-  width: 25px !important;
-  height: 25px !important;
+  width: 45px !important;
+  height: 45px !important;
 }
 
-.compartilhar-tamanho {
-  font-size: 20px !important;
-}
+
 
 .subtitle-container {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: start;
 }
 
 .botoes-card {
@@ -141,6 +138,6 @@ export default defineComponent({
 
 .subtitle {
   font-size: 12px;
-  margin-top: 4px;
+  margin-top: 10px;
 }
 </style>

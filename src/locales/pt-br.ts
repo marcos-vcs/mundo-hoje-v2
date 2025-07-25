@@ -8,7 +8,7 @@ export default {
   ptbr: "Português",
   enus: "Inglês",
   eses: "Espanhol",
-  mundo_hoje: "Mundo Hoje",
+  mundo_hoje: "Mundo hoje",
   buscar: "Buscar",
   publicado_em: "Publicado em",
   equivale: "equivale há",

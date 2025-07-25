@@ -5,11 +5,7 @@ export const configuracoesMixin = {
     carregaModoDark() {
       if (!localStorage.getItem("modoDark")) {
         localStorage.setItem(
-          "modoDark",
-          window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "true"
-            : "false"
-        );
+          "modoDark", "true");
       }
 
       const modoDark = localStorage.getItem("modoDark") === "true";

@@ -23,7 +23,7 @@ export default defineComponent({
   methods: {
     carregarIdioma() {
       if (!localStorage.getItem("idioma")) {
-        localStorage.setItem("idioma", window.navigator.language.toLowerCase() || "pt-br");
+        localStorage.setItem("idioma", "pt-br");
       }
 
       const idioma = (localStorage.getItem("idioma") || "pt-br").toLowerCase();
