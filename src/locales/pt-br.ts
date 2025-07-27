@@ -17,4 +17,6 @@ export default {
   notfound_title: "Sem noticias por aqui :(",
   notfound_description: "Tente novamente mais tarde ou verifique sua conexão com a internet.",
   detalhes_noticia: "Detalhes da Notícia",
+  carregando: "Carregando...",
+  pesquisar: "Pesquisar notícias",
 }

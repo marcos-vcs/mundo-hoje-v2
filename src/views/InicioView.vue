@@ -12,6 +12,9 @@
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
+      <ion-toolbar style="margin-top: -5px">
+        <BarraPesquisa ref="barraPesquisa" @pesquisou="pesquisouNoticia" />
+      </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true">
       <ion-refresher slot="fixed" @ionRefresh="reset">
@@ -23,13 +26,17 @@
       <div class="divisao">
         <ion-item-divider></ion-item-divider>
       </div>
-      
+
       <CardNoticia
         v-for="item in noticia.items"
         :key="item.id"
         :item="item"
         @clickCard="detalhesNoticia"
       />
+      <div v-show="mostrarCarregouTudo" class="carregou-tudo">
+          Você chegou ao fim!
+      </div>
+
       <DetalhesNoticiaModal
         :isOpen="detalhesNoticiaModalEhAberto"
         :item="itemNoticiaSelecionado"
@@ -40,7 +47,13 @@
       <NotFound
         :title="$t('notfound_title')"
         :message="$t('notfound_description')"
-        v-if="!noticia.items"
+        v-show="noticia.items && noticia.items.length === 0 && !loading"
+      />
+      <ion-loading
+        :is-open="true"
+        v-show="loading"
+        :message="$t('carregando')"
+        spinner="circles"
       />
 
       <ion-infinite-scroll v-if="noticia.items" @ionInfinite="ionInfinite">
@@ -65,6 +78,7 @@ import {
   IonRefresher,
   IonRefresherContent,
   IonItemDivider,
+  IonLoading,
 } from "@ionic/vue";
 import { refreshOutline } from "ionicons/icons";
 import { defineComponent } from "vue";
@@ -79,7 +93,8 @@ import NotFound from "@/components/NotFound.vue";
 import DetalhesNoticiaModal from "@/components/DetalhesNoticiaModal.vue";
 import { ItemNoticia } from "@/models/itemNoticia";
 import { ScrapingNoticia } from "@/models/scrapingNoticia";
-import { SplashScreen } from '@capacitor/splash-screen';
+import { SplashScreen } from "@capacitor/splash-screen";
+import BarraPesquisa from "@/components/BarraPesquisa.vue";
 
 export default defineComponent({
   name: "InicioView",
@@ -101,6 +116,8 @@ export default defineComponent({
     NotFound,
     DetalhesNoticiaModal,
     IonItemDivider,
+    IonLoading,
+    BarraPesquisa,
   },
   data() {
     return {
@@ -109,12 +126,27 @@ export default defineComponent({
       cotacoes: {} as Coins,
       qtd: 20,
       page: 1,
+      pagePesquisa: 1,
       loading: false,
       detalhesNoticiaModalEhAberto: false,
       itemNoticiaSelecionado: {} as ItemNoticia,
       resultadoScrapingNoticiaSelecionada: {} as ScrapingNoticia,
       loadingDetalhes: false,
+      valorPesquisaNoticia: "",
     };
+  },
+  computed: {
+    mostrarCarregouTudo() {
+      if(this.noticia.items && this.noticia.items.length === 0){
+        return false;
+      }
+
+      if(this.valorPesquisaNoticia.length > 0){
+        return this.pagePesquisa === this.noticia.totalPages;
+      }else{
+        return this.page === this.noticia.totalPages;
+      }
+    }
   },
   async mounted() {
     await this.buscarNoticias();
@@ -123,8 +155,11 @@ export default defineComponent({
   },
   methods: {
     async buscarNoticias() {
+      this.loading = true;
+      this.noticia = [] as any;
+
       await ibgeNoticeService
-        .getNotices(this.qtd, this.page)
+        .getNotices("", this.qtd, this.page)
         .then((response) => {
           const noticiasData = response;
 
@@ -147,10 +182,54 @@ export default defineComponent({
             ],
           };
 
-          this.page += 1;
+          this.page =
+            noticiasData.nextPage === 0 ? this.page : noticiasData.nextPage;
         })
         .catch((error) => {
           console.error("Erro ao carregar notícias:", error);
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    },
+    async pesquisarNoticia() {
+      this.loading = true;
+      this.noticia = [] as any;
+
+      await ibgeNoticeService
+        .getNotices(this.valorPesquisaNoticia, this.qtd, this.pagePesquisa)
+        .then((response) => {
+          const noticiasData = response;
+
+          this.noticia = {
+            ...noticiasData,
+            items: [
+              ...(this.noticia.items || []),
+              ...noticiasData.items.map((newsItem: any) => ({
+                data_publicacao: newsItem.data_publicacao,
+                destaque: newsItem.destaque,
+                editoria: newsItem.editoria,
+                id: newsItem.id,
+                introducao: newsItem.introducao,
+                link: newsItem.link,
+                titulo: newsItem.titulo,
+                tipo: newsItem.tipo,
+                produto_id: newsItem.produto_id,
+                imagens: this.sanitizaJsonImagens(newsItem.imagens),
+              })),
+            ],
+          };
+
+          this.pagePesquisa =
+            noticiasData.nextPage === 0
+              ? this.pagePesquisa
+              : noticiasData.nextPage;
+        })
+        .catch((error) => {
+          console.error("Erro ao carregar notícias:", error);
+        })
+        .finally(() => {
+          this.loading = false;
         });
     },
     ionInfinite(event: CustomEvent) {
@@ -159,45 +238,91 @@ export default defineComponent({
         return;
       }
 
-      this.loading = true;
-
-      ibgeNoticeService
-        .getNotices(this.qtd, this.page)
-        .then((response) => {
-          const noticiasData = response;
-
-          if (!noticiasData.items.length) {
-            (event.target as HTMLIonInfiniteScrollElement).disabled = true;
-          }
-
-          this.noticia = {
-            ...noticiasData,
-            items: [
-              ...(this.noticia.items || []),
-              ...noticiasData.items.map((newsItem: any) => ({
-                data_publicacao: newsItem.data_publicacao,
-                destaque: newsItem.destaque,
-                editoria: newsItem.editoria,
-                id: newsItem.id,
-                introducao: newsItem.introducao,
-                link: newsItem.link,
-                titulo: newsItem.titulo,
-                tipo: newsItem.tipo,
-                produto_id: newsItem.produto_id,
-                imagens: this.sanitizaJsonImagens(newsItem.imagens),
-              })),
-            ],
-          };
-
-          this.page += 1;
-        })
-        .catch((error) => {
-          console.error("Erro ao carregar notícias:", error);
-        })
-        .finally(() => {
-          this.loading = false;
+      if (this.valorPesquisaNoticia.length > 0) {
+        if (this.pagePesquisa === this.noticia.totalPages) {
           (event.target as HTMLIonInfiniteScrollElement).complete();
-        });
+          return;
+        }
+
+        ibgeNoticeService
+          .getNotices(this.valorPesquisaNoticia, this.qtd, this.pagePesquisa)
+          .then((response) => {
+            const noticiasData = response;
+
+            if (!noticiasData.items.length) {
+              (event.target as HTMLIonInfiniteScrollElement).disabled = true;
+            }
+
+            this.noticia = {
+              ...noticiasData,
+              items: [
+                ...(this.noticia.items || []),
+                ...noticiasData.items.map((newsItem: any) => ({
+                  data_publicacao: newsItem.data_publicacao,
+                  destaque: newsItem.destaque,
+                  editoria: newsItem.editoria,
+                  id: newsItem.id,
+                  introducao: newsItem.introducao,
+                  link: newsItem.link,
+                  titulo: newsItem.titulo,
+                  tipo: newsItem.tipo,
+                  produto_id: newsItem.produto_id,
+                  imagens: this.sanitizaJsonImagens(newsItem.imagens),
+                })),
+              ],
+            };
+
+            this.pagePesquisa += noticiasData.nextPage;
+          })
+          .catch((error) => {
+            console.error("Erro ao carregar notícias:", error);
+          })
+          .finally(() => {
+            (event.target as HTMLIonInfiniteScrollElement).complete();
+          });
+      } else {
+        if (this.page === this.noticia.totalPages) {
+          (event.target as HTMLIonInfiniteScrollElement).complete();
+          return;
+        }
+
+        ibgeNoticeService
+          .getNotices("", this.qtd, this.page)
+          .then((response) => {
+            const noticiasData = response;
+
+            if (!noticiasData.items.length) {
+              (event.target as HTMLIonInfiniteScrollElement).disabled = true;
+            }
+
+            this.noticia = {
+              ...noticiasData,
+              items: [
+                ...(this.noticia.items || []),
+                ...noticiasData.items.map((newsItem: any) => ({
+                  data_publicacao: newsItem.data_publicacao,
+                  destaque: newsItem.destaque,
+                  editoria: newsItem.editoria,
+                  id: newsItem.id,
+                  introducao: newsItem.introducao,
+                  link: newsItem.link,
+                  titulo: newsItem.titulo,
+                  tipo: newsItem.tipo,
+                  produto_id: newsItem.produto_id,
+                  imagens: this.sanitizaJsonImagens(newsItem.imagens),
+                })),
+              ],
+            };
+
+            this.page += noticiasData.nextPage;
+          })
+          .catch((error) => {
+            console.error("Erro ao carregar notícias:", error);
+          })
+          .finally(() => {
+            (event.target as HTMLIonInfiniteScrollElement).complete();
+          });
+      }
     },
     sanitizaJsonImagens(imagens: string): Imagem {
       try {
@@ -232,14 +357,19 @@ export default defineComponent({
     },
     reset(event: any) {
       setTimeout(() => {
+        (this.$refs.barraPesquisa as any).limparPesquisa();
         this.noticia = {} as Noticia;
         this.page = 1;
+        this.pagePesquisa = 1;
         this.loading = false;
         this.buscarNoticias();
         this.buscarCotacoes();
-        if (event) {
-          event.target.complete();
-        }
+        try {
+          if (event) {
+            event.target.complete();
+          }
+        } catch {return;}
+
       }, 100);
     },
     async buscarCotacoes() {
@@ -254,20 +384,39 @@ export default defineComponent({
       this.loadingDetalhes = true;
       this.detalhesNoticiaModalEhAberto = true;
       this.itemNoticiaSelecionado = item;
-      ibgeNoticeService.scrapingNotice(item.link).then((response) => {
-        if (response) {
-          this.resultadoScrapingNoticiaSelecionada = response;
-        }
-      })
-      .finally(() => {
-        this.loadingDetalhes = false;
-      });
+      ibgeNoticeService
+        .scrapingNotice(item.link)
+        .then((response) => {
+          if (response) {
+            this.resultadoScrapingNoticiaSelecionada = response;
+          }
+        })
+        .finally(() => {
+          this.loadingDetalhes = false;
+        });
+    },
+    pesquisouNoticia(pesquisa: string) {
+      this.noticia = {} as Noticia;
+      this.page = 1;
+      this.pagePesquisa = 1;
+      this.valorPesquisaNoticia = pesquisa;
+      this.valorPesquisaNoticia = pesquisa;
+
+      if (pesquisa.length > 0) {
+        this.pesquisarNoticia();
+      } else {
+        this.buscarNoticias();
+      }
     },
   },
 });
 </script>
 
 <style scoped>
+.carregou-tudo {
+  text-align: center;
+}
+
 .divisao {
   width: 90%;
   margin: auto;

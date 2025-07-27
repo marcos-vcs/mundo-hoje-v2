@@ -36,20 +36,30 @@
             <ion-item lines="none" class="br-15 -mt-20">
               <ion-label>{{ $t("idioma") }}:</ion-label>
               <ion-select
+                :placeholder="idioma"
+                interface="popover"
                 :value="idioma"
                 @ionChange="mudouIdioma($event)"
                 slot="end"
               >
-                <ion-select-option value="pt-br">{{ $t("ptbr") }}</ion-select-option>
-                <ion-select-option value="en-us">{{ $t("enus") }}</ion-select-option>
-                <ion-select-option value="es-es">{{ $t("eses") }}</ion-select-option>
+                <ion-select-option value="pt-br">{{
+                  $t("ptbr")
+                }}</ion-select-option>
+                <ion-select-option value="en-us">{{
+                  $t("enus")
+                }}</ion-select-option>
+                <ion-select-option value="es-es">{{
+                  $t("eses")
+                }}</ion-select-option>
               </ion-select>
             </ion-item>
           </ion-col>
         </ion-row>
 
         <!-- Icone not found (adicionar depois nos créditos) -->
-         <!-- <a href="https://www.flaticon.com/free-icons/page-not-found" title="page not found icons">Page not found icons created by Roundicons Premium - Flaticon</a> -->
+        <!-- <a href="https://www.flaticon.com/free-icons/page-not-found" title="page not found icons">Page not found icons created by Roundicons Premium - Flaticon</a> -->
+        <!-- Icone imagem quebrada -->
+        <!-- <a href="https://www.flaticon.com/br/icones-gratis/sem-imagem" title="sem imagem ícones">Sem imagem ícones criados por sonnycandra - Flaticon</a> -->
       </ion-grid>
     </ion-content>
   </ion-page>
@@ -67,14 +77,12 @@ import {
   IonSelect,
 } from "@ionic/vue";
 import { defineComponent } from "vue";
-import {configuracoesMixin} from "@/mixins/configuracoesMixin";
+import { configuracoesMixin } from "@/mixins/configuracoesMixin";
 import { useStore } from "@/store";
 
 export default defineComponent({
   name: "ConfiguracoesView",
-  mixins: [
-    configuracoesMixin,
-  ],
+  mixins: [configuracoesMixin],
   components: {
     IonPage,
     IonHeader,
@@ -87,7 +95,7 @@ export default defineComponent({
   data() {
     return {
       modoDark: false,
-      idioma: 'pt-br',
+      idioma: "pt-br",
       store: useStore(),
     };
   },
@@ -128,5 +136,4 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

@@ -7,9 +7,15 @@
       <div class="imagem-container">
         <ion-skeleton-text v-if="loading" animated class="imagem-card" />
         <img
-          v-show="!loading"
-          :src="item.imagens.image_intro"
+          v-show="!loading && calculaLinkImagem !== semImagem"
+          :src="calculaLinkImagem"
           class="imagem-card"
+          @load="loading = false"
+        />
+        <img
+          v-show="!loading && calculaLinkImagem === semImagem"
+          :src="calculaLinkImagem"
+          class="sem-imagem"
           @load="loading = false"
         />
       </div>
@@ -21,10 +27,7 @@
           <div class="botoes-card">
             <ion-buttons slot="end">
               <ion-button class="btn-size" @click.stop="compartilharNoticia">
-                <ion-icon
-                  :icon="shareSocialOutline"
-                  slot="icon-only"
-                />
+                <ion-icon :icon="shareSocialOutline" slot="icon-only" />
               </ion-button>
             </ion-buttons>
           </div>
@@ -63,6 +66,7 @@ export default defineComponent({
     return {
       loading: true,
       shareSocialOutline,
+      semImagem: "../../public/sem-imagem.png",
     };
   },
   emits: ["clickCard"],
@@ -75,6 +79,11 @@ export default defineComponent({
   computed: {
     publicadoEmSubtitle(): string {
       return `${this.$t("publicado_em")}: ${this.item.data_publicacao}`;
+    },
+    calculaLinkImagem() {
+      return this.item.imagens.image_intro
+        ? this.item.imagens.image_intro
+        : this.semImagem;
     },
   },
   methods: {
@@ -100,12 +109,16 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.sem-imagem {
+  width: 50%;
+  border-radius: 8px;
+  object-fit: fill;
+}
+
 .btn-size {
   width: 45px !important;
   height: 45px !important;
 }
-
-
 
 .subtitle-container {
   display: flex;
@@ -124,6 +137,7 @@ export default defineComponent({
   width: 100%;
   height: 180px;
   position: relative;
+  text-align:center;
 }
 .imagem-card {
   width: 100%;

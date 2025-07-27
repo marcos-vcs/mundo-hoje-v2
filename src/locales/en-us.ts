@@ -19,4 +19,6 @@ export default {
   notfound_description:
     "Please try again later or check your internet connection.",
   detalhes_noticia: "News Details",
+  carregando: "Loading...",
+  pesquisar: "Search news",
 };
