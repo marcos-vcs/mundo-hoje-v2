@@ -1,3 +1,4 @@
+import { Preferences } from "@capacitor/preferences";
 import { InjectionKey } from "vue";
 import { Store, createStore, useStore as vuexUseStore } from "vuex";
 
@@ -12,13 +13,13 @@ export const key: InjectionKey<Store<Estado>> = Symbol()
 export const store = createStore<Estado>({
     state: {
         configuracoes: {
-            modoDark: localStorage.getItem("modoDark") === "true",
+            modoDark: true,
         }
     },
     mutations: {
-        setModoDark(state, modoDark: boolean) {
+        async setModoDark(state, modoDark: boolean) {
             state.configuracoes.modoDark = modoDark;
-            localStorage.setItem("modoDark", String(modoDark));
+            await Preferences.set({ key: 'modoDark', value: String(modoDark) })
         },
     }
 });

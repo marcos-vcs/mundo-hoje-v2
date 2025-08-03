@@ -8,6 +8,7 @@
 import { IonApp, IonRouterOutlet } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { configuracoesMixin } from "@/mixins/configuracoesMixin";
+import { Preferences } from '@capacitor/preferences';
 
 export default defineComponent({
   name: "App",
@@ -21,12 +22,12 @@ export default defineComponent({
     this.carregarIdioma();
   },
   methods: {
-    carregarIdioma() {
-      if (!localStorage.getItem("idioma")) {
-        localStorage.setItem("idioma", "pt-br");
+    async carregarIdioma() {
+      if (!(await Preferences.get({ key: 'idioma' })).value) {
+        await Preferences.set({ key: 'idioma', value: 'pt-br' });
       }
 
-      const idioma = (localStorage.getItem("idioma") || "pt-br").toLowerCase();
+      const idioma = ((await Preferences.get({ key: 'idioma' })).value || "pt-br").toLowerCase();
       this.$i18n.locale = idioma;
     },
   },

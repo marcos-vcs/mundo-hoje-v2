@@ -94,6 +94,7 @@ import {
   starSharp,
   starOutline,
 } from "ionicons/icons";
+import { Preferences } from '@capacitor/preferences';
 
 export default defineComponent({
   name: "CarroselCotacoes",
@@ -121,8 +122,11 @@ export default defineComponent({
       trendingUpOutline,
       starSharp,
       starOutline,
-      pinnedCodes: this.getPinnedCodes(),
+      pinnedCodes:[] as any,
     };
+  },
+  async mounted() {
+    this.pinnedCodes = await this.getPinnedCodes();
   },
   computed: {
     orderedCotacoes(): CoinsMetadata[] {
@@ -151,23 +155,24 @@ export default defineComponent({
         date.getMinutes()
       )}:${pad(date.getSeconds())}`;
     },
-    getPinnedCodes(): string[] {
-      const saved = localStorage.getItem("pinnedCotacoes");
+    async getPinnedCodes(): Promise<string[]> {
+      
+      const saved = (await Preferences.get({ key: 'pinnedCotacoes' })).value;
       return saved ? JSON.parse(saved) : [];
     },
-    savePinnedCodes() {
-      localStorage.setItem("pinnedCotacoes", JSON.stringify(this.pinnedCodes));
+    async savePinnedCodes() {
+      await Preferences.set({ key: 'pinnedCotacoes', value: JSON.stringify(this.pinnedCodes) })
     },
     isPinned(code: string): boolean {
       return this.pinnedCodes.includes(code);
     },
-    togglePin(code: string) {
+    async togglePin(code: string) {
       if (this.isPinned(code)) {
         this.pinnedCodes = this.pinnedCodes.filter((c: any) => c !== code);
       } else {
         this.pinnedCodes.push(code);
       }
-      this.savePinnedCodes();
+      await this.savePinnedCodes();
     },
   },
 });

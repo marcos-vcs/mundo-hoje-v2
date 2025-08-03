@@ -36,10 +36,10 @@
             <ion-item lines="none" class="br-15 -mt-20">
               <ion-label>{{ $t("idioma") }}:</ion-label>
               <ion-select
-                :placeholder="idioma"
                 interface="popover"
+                v-model="idioma"
+                @ionChange="mudouIdioma()"
                 :value="idioma"
-                @ionChange="mudouIdioma($event)"
                 slot="end"
               >
                 <ion-select-option value="pt-br">{{
@@ -55,6 +55,10 @@
             </ion-item>
           </ion-col>
         </ion-row>
+
+        <ion-button expand="block" class="ion-margin-top ion-margin-bottom" @click="teste">
+          {{ $t("sobre") }}
+        </ion-button>
 
         <!-- Icone not found (adicionar depois nos créditos) -->
         <!-- <a href="https://www.flaticon.com/free-icons/page-not-found" title="page not found icons">Page not found icons created by Roundicons Premium - Flaticon</a> -->
@@ -79,6 +83,7 @@ import {
 import { defineComponent } from "vue";
 import { configuracoesMixin } from "@/mixins/configuracoesMixin";
 import { useStore } from "@/store";
+import { Preferences } from "@capacitor/preferences";
 
 export default defineComponent({
   name: "ConfiguracoesView",
@@ -99,10 +104,10 @@ export default defineComponent({
       store: useStore(),
     };
   },
-  mounted() {
-    this.carregaModoDark();
+  async created() {
+    await this.carregaModoDark();
+    await this.carregarIdioma();
     this.modoDark = this.store.state.configuracoes.modoDark;
-    this.carregarIdioma();
   },
   computed: {
     modoDarkText() {
@@ -110,25 +115,32 @@ export default defineComponent({
     },
   },
   methods: {
-    toggleDarkMode(event: ToggleCustomEvent<{ checked: boolean }>) {
+    teste() {
+      this.$i18n.locale = "en-us";
+    },
+    async toggleDarkMode(event: ToggleCustomEvent<{ checked: boolean }>) {
       this.modoDark = event.detail.checked;
-      localStorage.setItem("modoDark", this.modoDark.toString());
+      await Preferences.set({ key: 'modoDark', value: this.modoDark.toString() });
       document.documentElement.classList.toggle(
         "ion-palette-dark",
         this.modoDark
       );
     },
-    mudouIdioma(event: any) {
-      this.idioma = event.detail.value;
-      localStorage.setItem("idioma", this.idioma.toLowerCase());
+    async mudouIdioma() {
       this.$i18n.locale = this.idioma;
+      await Preferences.set({
+        key: "idioma",
+        value: this.idioma.toLowerCase(),
+      });
     },
-    carregarIdioma() {
-      if (!localStorage.getItem("idioma")) {
-        localStorage.setItem("idioma", "pt-br");
+    async carregarIdioma() {
+      if (!(await Preferences.get({ key: "idioma" })).value) {
+        await Preferences.set({ key: "idioma", value: "pt-br" });
       }
 
-      const idioma = (localStorage.getItem("idioma") || "pt-br").toLowerCase();
+      const idioma = (
+        (await Preferences.get({ key: "idioma" })).value || "pt-br"
+      ).toLowerCase();
       this.$i18n.locale = idioma;
       this.idioma = idioma;
     },
