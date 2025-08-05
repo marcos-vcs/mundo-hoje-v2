@@ -21,11 +21,7 @@
                 {{ $t("dark_mode") }}:
                 <span>{{ modoDarkText }}</span>
               </ion-label>
-              <ion-toggle
-                :checked="modoDark"
-                @ionChange="toggleDarkMode($event)"
-                slot="end"
-              />
+              <ion-toggle :checked="modoDark" @ionChange="toggleDarkMode($event)" slot="end" />
             </ion-item>
           </ion-col>
         </ion-row>
@@ -35,30 +31,30 @@
           <ion-col size="12" class="ion-text-center ion-padding">
             <ion-item lines="none" class="br-15 -mt-20">
               <ion-label>{{ $t("idioma") }}:</ion-label>
-              <ion-select
-                interface="popover"
-                v-model="idioma"
-                @ionChange="mudouIdioma()"
-                :value="idioma"
-                slot="end"
-              >
+              <ion-select interface="popover" v-model="idioma" @ionChange="mudouIdioma()" :value="idioma" slot="end">
                 <ion-select-option value="pt-br">{{
                   $t("ptbr")
-                }}</ion-select-option>
+                  }}</ion-select-option>
                 <ion-select-option value="en-us">{{
                   $t("enus")
-                }}</ion-select-option>
+                  }}</ion-select-option>
                 <ion-select-option value="es-es">{{
                   $t("eses")
-                }}</ion-select-option>
+                  }}</ion-select-option>
               </ion-select>
             </ion-item>
           </ion-col>
         </ion-row>
 
-        <ion-button expand="block" class="ion-margin-top ion-margin-bottom" @click="teste">
-          {{ $t("sobre") }}
-        </ion-button>
+        <ion-row>
+          <ion-col size="12" class="ion-text-center ion-padding -mt-25">
+            <ion-button expand="block" class="ion-margin-top ion-margin-bottom" @click="abreModalSobre">
+              {{ $t("sobre") }}
+            </ion-button>
+          </ion-col>
+        </ion-row>
+
+        <sobre-modal @setOpen="(e) => modalSobreEhAberto = e" :isOpen="modalSobreEhAberto" />
 
         <!-- Icone not found (adicionar depois nos créditos) -->
         <!-- <a href="https://www.flaticon.com/free-icons/page-not-found" title="page not found icons">Page not found icons created by Roundicons Premium - Flaticon</a> -->
@@ -84,6 +80,7 @@ import { defineComponent } from "vue";
 import { configuracoesMixin } from "@/mixins/configuracoesMixin";
 import { useStore } from "@/store";
 import { Preferences } from "@capacitor/preferences";
+import SobreModal from "@/components/SobreModal.vue";
 
 export default defineComponent({
   name: "ConfiguracoesView",
@@ -96,12 +93,14 @@ export default defineComponent({
     IonContent,
     IonToggle,
     IonSelect,
+    SobreModal,
   },
   data() {
     return {
       modoDark: false,
-      idioma: "pt-br",
+      idioma: 'pt-br',
       store: useStore(),
+      modalSobreEhAberto: false,
     };
   },
   async created() {
@@ -115,8 +114,8 @@ export default defineComponent({
     },
   },
   methods: {
-    teste() {
-      this.$i18n.locale = "en-us";
+    abreModalSobre() {
+      this.modalSobreEhAberto = !this.modalSobreEhAberto;
     },
     async toggleDarkMode(event: ToggleCustomEvent<{ checked: boolean }>) {
       this.modoDark = event.detail.checked;
@@ -148,4 +147,8 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.-mt-25 {
+  margin-top: -25px;
+}
+</style>

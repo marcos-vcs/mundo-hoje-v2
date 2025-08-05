@@ -21,4 +21,5 @@ export default {
   detalhes_noticia: "Detalles de la Noticia",
   carregando: "Cargando...",
   pesquisar: "Buscar noticias",
+  sobre: "Acerca",
 };
