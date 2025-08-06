@@ -11,4 +11,5 @@ export interface ItemNoticia {
     tipo: string;
     produto_id: number;
     imagens: Imagem;
+    favorito?: boolean;
 }

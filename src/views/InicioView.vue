@@ -32,9 +32,10 @@
         :key="item.id"
         :item="item"
         @clickCard="detalhesNoticia"
+        @favoritarNoticia="favoritar"
       />
       <div v-show="mostrarCarregouTudo" class="carregou-tudo">
-          Você chegou ao fim!
+        Você chegou ao fim!
       </div>
 
       <DetalhesNoticiaModal
@@ -95,6 +96,9 @@ import { ItemNoticia } from "@/models/itemNoticia";
 import { ScrapingNoticia } from "@/models/scrapingNoticia";
 import { SplashScreen } from "@capacitor/splash-screen";
 import BarraPesquisa from "@/components/BarraPesquisa.vue";
+import { useStore } from "@/store";
+import { favoritosMixin } from "@/mixins/favoritosMixin";
+import { Preferences } from "@capacitor/preferences";
 
 export default defineComponent({
   name: "InicioView",
@@ -119,6 +123,7 @@ export default defineComponent({
     IonLoading,
     BarraPesquisa,
   },
+  mixins: [favoritosMixin],
   data() {
     return {
       refreshOutline,
@@ -133,20 +138,21 @@ export default defineComponent({
       resultadoScrapingNoticiaSelecionada: {} as ScrapingNoticia,
       loadingDetalhes: false,
       valorPesquisaNoticia: "",
+      $store: useStore(),
     };
   },
   computed: {
     mostrarCarregouTudo() {
-      if(this.noticia.items && this.noticia.items.length === 0){
+      if (this.noticia.items && this.noticia.items.length === 0) {
         return false;
       }
 
-      if(this.valorPesquisaNoticia.length > 0){
+      if (this.valorPesquisaNoticia.length > 0) {
         return this.pagePesquisa === this.noticia.totalPages;
-      }else{
+      } else {
         return this.page === this.noticia.totalPages;
       }
-    }
+    },
   },
   async mounted() {
     await this.buscarNoticias();
@@ -154,6 +160,16 @@ export default defineComponent({
     SplashScreen.hide();
   },
   methods: {
+    async favoritar($event: any) {
+      await this.favoritarNoticia($event);
+      await this.atualizarQtdNoticiasFavoritas();
+    },
+    async atualizarQtdNoticiasFavoritas() {
+      this.$store.commit(
+        "setQtdNoticiasFavoritas",
+        await this.buscaQtdNoticiasFavoritas()
+      );
+    },
     async buscarNoticias() {
       this.loading = true;
       this.noticia = [] as any;
@@ -178,9 +194,18 @@ export default defineComponent({
                 tipo: newsItem.tipo,
                 produto_id: newsItem.produto_id,
                 imagens: this.sanitizaJsonImagens(newsItem.imagens),
+                favorito: false,
               })),
             ],
           };
+
+          this.noticia.items.forEach(async (item) => {
+            item.favorito = await this.verificarSeNoticiaFavoritada(item)
+              .then((favoritados) => {
+                return favoritados;
+              })
+              .catch(() => false);
+          });
 
           this.page =
             noticiasData.nextPage === 0 ? this.page : noticiasData.nextPage;
@@ -219,6 +244,14 @@ export default defineComponent({
               })),
             ],
           };
+
+          this.noticia.items.forEach(async (item) => {
+            item.favorito = await this.verificarSeNoticiaFavoritada(item)
+              .then((favoritados) => {
+                return favoritados;
+              })
+              .catch(() => false);
+          });
 
           this.pagePesquisa =
             noticiasData.nextPage === 0
@@ -368,8 +401,9 @@ export default defineComponent({
           if (event) {
             event.target.complete();
           }
-        } catch {return;}
-
+        } catch {
+          return;
+        }
       }, 100);
     },
     async buscarCotacoes() {
@@ -407,6 +441,19 @@ export default defineComponent({
       } else {
         this.buscarNoticias();
       }
+    },
+    async verificarSeNoticiaFavoritada(item: ItemNoticia): Promise<boolean> {
+      const noticiasFavoritas = await Preferences.get({
+        key: "noticiasFavoritas",
+      });
+      if (!noticiasFavoritas.value) {
+        return false;
+      }
+
+      const favoritos = JSON.parse(
+        noticiasFavoritas.value || "[]"
+      ) as ItemNoticia[];
+      return favoritos.some((favorito) => favorito.id === item.id);
     },
   },
 });

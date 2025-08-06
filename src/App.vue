@@ -9,6 +9,8 @@ import { IonApp, IonRouterOutlet } from "@ionic/vue";
 import { defineComponent } from "vue";
 import { configuracoesMixin } from "@/mixins/configuracoesMixin";
 import { Preferences } from '@capacitor/preferences';
+import { favoritosMixin } from "./mixins/favoritosMixin";
+import { useStore } from "@/store";
 
 export default defineComponent({
   name: "App",
@@ -16,10 +18,16 @@ export default defineComponent({
     IonApp,
     IonRouterOutlet,
   },
-  mixins: [configuracoesMixin],
-  mounted() {
-    this.carregaModoDark();
-    this.carregarIdioma();
+  data() {
+    return {
+      $store: useStore(),
+    };
+  },
+  mixins: [configuracoesMixin, favoritosMixin],
+  async mounted() {
+    await this.carregaModoDark();
+    await this.carregarIdioma();
+    this.$store.commit("setQtdNoticiasFavoritas", await this.buscaQtdNoticiasFavoritas());
   },
   methods: {
     async carregarIdioma() {

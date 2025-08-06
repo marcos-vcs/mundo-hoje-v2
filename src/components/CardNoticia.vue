@@ -26,6 +26,9 @@
           </div>
           <div class="botoes-card">
             <ion-buttons slot="end">
+              <ion-button class="btn-size" @click.stop="favoritarNoticia">
+                <ion-icon :icon="iconeFavorito" slot="icon-only" />
+              </ion-button>
               <ion-button class="btn-size" @click.stop="compartilharNoticia">
                 <ion-icon :icon="shareSocialOutline" slot="icon-only" />
               </ion-button>
@@ -41,7 +44,8 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 import { ItemNoticia } from "@/models/itemNoticia";
-import { shareSocialOutline } from "ionicons/icons";
+import { shareSocialOutline, heartOutline, heart } from "ionicons/icons";
+import { Share } from "@capacitor/share";
 
 import {
   IonCard,
@@ -66,10 +70,12 @@ export default defineComponent({
     return {
       loading: true,
       shareSocialOutline,
+      heartOutline,
+      heart,
       semImagem: "../../public/sem-imagem.png",
     };
   },
-  emits: ["clickCard"],
+  emits: ["clickCard", "favoritarNoticia"],
   props: {
     item: {
       type: Object as PropType<ItemNoticia>,
@@ -85,24 +91,28 @@ export default defineComponent({
         ? this.item.imagens.image_intro
         : this.semImagem;
     },
+    iconeFavorito() {
+      return this.item.favorito ? this.heart : this.heartOutline;
+    },
   },
   methods: {
     onClickCard() {
       this.$emit("clickCard", this.item);
     },
-    compartilharNoticia() {
-      const url = this.item.link;
-      if (navigator.share) {
-        navigator
-          .share({
-            title: this.item.titulo,
-            text: this.item.introducao,
-            url: url,
-          })
-          .catch((error) => console.error("Erro ao compartilhar:", error));
-      } else {
-        console.warn("Compartilhamento não suportado neste navegador.");
+    async compartilharNoticia() {
+      try {
+        await Share.share({
+          title: this.item.titulo,
+          text: this.item.introducao,
+          url: this.item.link,
+          dialogTitle: "Compartilhar notícia", // título do diálogo no Android
+        });
+      } catch (error) {
+        console.error("Erro ao compartilhar:", error);
       }
+    },
+    async favoritarNoticia() {
+      this.$emit("favoritarNoticia", this.item);
     },
   },
 });
@@ -137,7 +147,7 @@ export default defineComponent({
   width: 100%;
   height: 180px;
   position: relative;
-  text-align:center;
+  text-align: center;
 }
 .imagem-card {
   width: 100%;
