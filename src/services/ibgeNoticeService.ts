@@ -27,6 +27,7 @@ export default {
       html(".texto--single").find("figure").remove();
       html(".texto--single").find("img").remove();
       html(".texto--single").find("iframe").remove();
+      html(".texto--single").find("#slider-video").remove();
 
       const retorno = {
         titulo: html("h2").text().replaceAll(/\s+/g, " ").trim(),

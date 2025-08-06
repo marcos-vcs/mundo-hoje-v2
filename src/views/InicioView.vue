@@ -142,6 +142,9 @@ export default defineComponent({
     };
   },
   computed: {
+    qtdNoticiasFavoritas(): number {
+      return this.$store.state.qtdNoticiasFavoritas || 0;
+    },
     mostrarCarregouTudo() {
       if (this.noticia.items && this.noticia.items.length === 0) {
         return false;
@@ -152,6 +155,11 @@ export default defineComponent({
       } else {
         return this.page === this.noticia.totalPages;
       }
+    },
+  },
+  watch: {
+    qtdNoticiasFavoritas() {
+      this.reset(null);
     },
   },
   async mounted() {
