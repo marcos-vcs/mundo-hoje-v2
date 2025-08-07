@@ -22,4 +22,16 @@ export default {
   carregando: "Loading...",
   pesquisar: "Search news",
   sobre: "About",
+  sobre_titulo_1: "Thank you for using the",
+  sobre_paragrafo_1: "This application brings you the latest news directly from the",
+  sobre_paragrafo_2: "IBGE News API",
+  sobre_paragrafo_3: "providing reliable, up-to-date content focused on official data.",
+  sobre_titulo_2: "About the developer",
+  sobre_paragrafo_4: `My name is Marcos Vinicio, a software developer passionate about transforming ideas into digital solutions.
+    I work with technologies such as .NET, Vue.js, and Ionic. I created this project as an independent initiative
+    to democratize access to public information, with quality and accessibility.`,
+  sobre_titulo_3: "Image credits",
+  sobre_li_1: `Icon "Page not found" by`,
+  sobre_li_2: `Icon "Broken image" by`,
+  sobre_titulo_4: "Useful links",
 };

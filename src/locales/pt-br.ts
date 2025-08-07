@@ -20,4 +20,16 @@ export default {
   carregando: "Carregando...",
   pesquisar: "Pesquisar notícias",
   sobre: "Sobre",
+  sobre_titulo_1: "Obrigado por usar o",
+  sobre_paragrafo_1: "Este aplicativo traz para você as últimas notícias diretamente da",
+  sobre_paragrafo_2: "API de notícias do IBGE",
+  sobre_paragrafo_3: "oferecendo conteúdo confiável, atualizado e com foco em dados oficiais.",
+  sobre_titulo_2: "Sobre o desenvolvedor",
+  sobre_paragrafo_4: `Me chamo Marcos Vinicio, desenvolvedor de software apaixonado por transformar ideias em soluções digitais. 
+      Atuo com tecnologias como .NET, Vue.js, e Ionic. Criei este projeto como uma iniciativa independente 
+      para democratizar o acesso à informação pública, com qualidade e acessibilidade.`,
+  sobre_titulo_3: "Créditos das imagens",
+  sobre_li_1: `Ícone "Página não encontrada" por`,
+  sobre_li_2: `Ícone "Imagem quebrada" por`,
+  sobre_titulo_4: "Links úteis",
 }
