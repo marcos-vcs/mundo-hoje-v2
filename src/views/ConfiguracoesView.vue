@@ -21,7 +21,11 @@
                 {{ $t("dark_mode") }}:
                 <span>{{ modoDarkText }}</span>
               </ion-label>
-              <ion-toggle :checked="modoDark" @ionChange="toggleDarkMode($event)" slot="end" />
+              <ion-toggle
+                :checked="modoDark"
+                @ionChange="toggleDarkMode($event)"
+                slot="end"
+              />
             </ion-item>
           </ion-col>
         </ion-row>
@@ -31,16 +35,20 @@
           <ion-col size="12" class="ion-text-center ion-padding">
             <ion-item lines="none" class="br-15 -mt-20">
               <ion-label>{{ $t("idioma") }}:</ion-label>
-              <ion-select interface="popover" v-model="idioma" @ionChange="mudouIdioma()" :value="idioma" slot="end">
-                <ion-select-option value="pt-br">{{
-                  $t("ptbr")
-                  }}</ion-select-option>
-                <ion-select-option value="en-us">{{
-                  $t("enus")
-                  }}</ion-select-option>
-                <ion-select-option value="es-es">{{
-                  $t("eses")
-                  }}</ion-select-option>
+              <ion-select
+                interface="popover"
+                @ionChange="mudouIdioma"
+                slot="end"
+                :placeholder="opcoesIdioma.find(opcao => opcao.value === idioma)?.label"
+                :value="idioma"
+              >
+                <ion-select-option
+                  v-for="opcao in opcoesIdioma"
+                  :key="opcao.value"
+                  :value="opcao.value"
+                >
+                  {{ opcao.label }}
+                </ion-select-option>
               </ion-select>
             </ion-item>
           </ion-col>
@@ -48,13 +56,21 @@
 
         <ion-row>
           <ion-col size="12" class="ion-text-center ion-padding -mt-25">
-            <ion-button expand="block" class="ion-margin-top ion-margin-bottom" @click="abreModalSobre">
+            <ion-button
+              expand="block"
+              class="ion-margin-top ion-margin-bottom"
+              @click="abreModalSobre"
+            >
               {{ $t("sobre") }}
             </ion-button>
           </ion-col>
         </ion-row>
 
-        <sobre-modal @setOpen="(e) => modalSobreEhAberto = e" :isOpen="modalSobreEhAberto" />
+        <sobre-modal
+          @setOpen="(e) => (modalSobreEhAberto = e)"
+          :isOpen="modalSobreEhAberto"
+        >
+        </sobre-modal>
 
         <!-- Icone not found (adicionar depois nos créditos) -->
         <!-- <a href="https://www.flaticon.com/free-icons/page-not-found" title="page not found icons">Page not found icons created by Roundicons Premium - Flaticon</a> -->
@@ -98,12 +114,12 @@ export default defineComponent({
   data() {
     return {
       modoDark: false,
-      idioma: 'pt-br',
+      idioma: "pt-br",
       store: useStore(),
       modalSobreEhAberto: false,
     };
   },
-  async created() {
+  async mounted() {
     await this.carregaModoDark();
     await this.carregarIdioma();
     this.modoDark = this.store.state.configuracoes.modoDark;
@@ -112,6 +128,13 @@ export default defineComponent({
     modoDarkText() {
       return this.modoDark ? this.$t("ativo") : this.$t("inativo");
     },
+    opcoesIdioma() {
+      return [
+        { value: "pt-br", label: this.$t("ptbr") },
+        { value: "en-us", label: this.$t("enus") },
+        { value: "es-es", label: this.$t("eses") },
+      ];
+    },
   },
   methods: {
     abreModalSobre() {
@@ -119,13 +142,17 @@ export default defineComponent({
     },
     async toggleDarkMode(event: ToggleCustomEvent<{ checked: boolean }>) {
       this.modoDark = event.detail.checked;
-      await Preferences.set({ key: 'modoDark', value: this.modoDark.toString() });
+      await Preferences.set({
+        key: "modoDark",
+        value: this.modoDark.toString(),
+      });
       document.documentElement.classList.toggle(
         "ion-palette-dark",
         this.modoDark
       );
     },
-    async mudouIdioma() {
+    async mudouIdioma($event: any) {
+      this.idioma = this.fixBugIdioma($event.detail.value);
       this.$i18n.locale = this.idioma;
       await Preferences.set({
         key: "idioma",
@@ -143,6 +170,18 @@ export default defineComponent({
       this.$i18n.locale = idioma;
       this.idioma = idioma;
     },
+    fixBugIdioma(idioma: string) {
+      switch (idioma) {
+        case this.opcoesIdioma[0].label:
+          return "pt-br";
+        case this.opcoesIdioma[1].label:
+          return "en-us";
+        case this.opcoesIdioma[2].label:
+          return "es-es";
+        default:
+          return "pt-br";
+      }
+    }
   },
 });
 </script>

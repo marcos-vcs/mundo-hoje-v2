@@ -11,9 +11,9 @@
         <ion-tab-button tab="favoritos" href="/tabs/favoritos">
           <ion-icon aria-hidden="true" :icon="heart" />
           <ion-label>{{ $t("favoritos") }}</ion-label>
-          <ion-badge v-show="qtdNoticiasFavoritas > 0" color="danger">{{
-            qtdNoticiasFavoritas
-          }}</ion-badge>
+          <ion-badge v-show="qtdNoticiasFavoritas > 0" color="danger">
+            {{ qtdNoticiasFavoritas }}
+          </ion-badge>
         </ion-tab-button>
 
         <ion-tab-button tab="configuracoes" href="/tabs/configuracoes">

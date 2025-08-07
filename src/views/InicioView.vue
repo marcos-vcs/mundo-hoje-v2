@@ -159,7 +159,9 @@ export default defineComponent({
   },
   watch: {
     qtdNoticiasFavoritas() {
-      this.reset(null);
+      if(this.$route.path === '/tabs/favoritos') {
+        this.reset(null);
+      }
     },
   },
   async mounted() {
