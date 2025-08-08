@@ -34,4 +34,8 @@ export default {
   sobre_li_2: `Icono "Imagen quebrada" por`,
   sobre_titulo_4: "Links útiles",
   compartilhar_noticia: "Compartir noticia",
+  repositorio_projeto: "Repositorio del proyecto",
+  portifolio: "Portafolio",
+  linkedin: "LinkedIn",
+  github: "GitHub",
 };
