@@ -19,7 +19,7 @@
       <div class="imagem-container">
         <ion-skeleton-text v-if="loadingFoto" animated class="imagem-detalhe" />
         <img
-          :src="item.imagens.image_fulltext"
+          :src="item.imagens?.image_fulltext"
           @load="loadingFoto = false"
           v-show="!loadingFoto"
           class="imagem-detalhe"
@@ -33,20 +33,11 @@
           <ion-col size="12">
             <ion-skeleton-text
               animated
-              style="width: 100%; height: 50px"
+              style="width: 100%; height: 50px;"
             ></ion-skeleton-text>
             <ion-skeleton-text
               animated
-              style="width: 100%; height: 14px; margin-top: 10px"
-            ></ion-skeleton-text>
-          </ion-col>
-        </ion-row>
-
-        <ion-row class="ion-margin-top">
-          <ion-col size="12">
-            <ion-skeleton-text
-              animated
-              style="width: 100%; height: 180px; border-radius: 10px"
+              style="width: 100%; height: 14px; margin-top: 10px; margin-bottom: 30px;"
             ></ion-skeleton-text>
           </ion-col>
         </ion-row>
@@ -55,19 +46,28 @@
           <ion-col size="12">
             <ion-skeleton-text
               animated
-              style="width: 100%; height: 16px"
+              style="width: 100%; height: 180px; border-radius: 10px; margin-bottom: 40px;"
+            ></ion-skeleton-text>
+          </ion-col>
+        </ion-row>
+
+        <ion-row class="ion-margin-top">
+          <ion-col size="12">
+            <ion-skeleton-text
+              animated
+              style="width: 100%; height: 20px;"
             ></ion-skeleton-text>
             <ion-skeleton-text
               animated
-              style="width: 95%; height: 16px; margin-top: 8px"
+              style="width: 95%; height: 20px; margin-top: 10px;"
             ></ion-skeleton-text>
             <ion-skeleton-text
               animated
-              style="width: 98%; height: 16px; margin-top: 8px"
+              style="width: 98%; height: 20px; margin-top: 10px;"
             ></ion-skeleton-text>
             <ion-skeleton-text
               animated
-              style="width: 60%; height: 16px; margin-top: 8px"
+              style="width: 60%; height: 20px; margin-top: 10px; margin-bottom: 30px;"
             ></ion-skeleton-text>
           </ion-col>
         </ion-row>
@@ -75,19 +75,19 @@
           <ion-col size="12">
             <ion-skeleton-text
               animated
-              style="width: 100%; height: 16px"
+              style="width: 100%; height: 20px;"
             ></ion-skeleton-text>
             <ion-skeleton-text
               animated
-              style="width: 95%; height: 16px; margin-top: 8px"
+              style="width: 95%; height: 20px; margin-top: 10px;"
             ></ion-skeleton-text>
             <ion-skeleton-text
               animated
-              style="width: 98%; height: 16px; margin-top: 8px"
+              style="width: 98%; height: 20px; margin-top: 10px;"
             ></ion-skeleton-text>
             <ion-skeleton-text
               animated
-              style="width: 60%; height: 16px; margin-top: 8px"
+              style="width: 60%; height: 20px; margin-top: 10px;"
             ></ion-skeleton-text>
           </ion-col>
         </ion-row>
@@ -135,11 +135,11 @@ export default defineComponent({
     },
     item: {
       type: Object as PropType<ItemNoticia>,
-      required: true,
+      default: Object as PropType<ItemNoticia>,
     },
     resultadoScraping: {
       type: Object as PropType<ScrapingNoticia>,
-      required: false,
+      default: Object as PropType<ScrapingNoticia>,
     },
   },
   data() {

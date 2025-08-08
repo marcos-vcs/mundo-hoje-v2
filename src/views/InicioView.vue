@@ -43,7 +43,7 @@
         :item="itemNoticiaSelecionado"
         :loading="loadingDetalhes"
         :resultadoScraping="resultadoScrapingNoticiaSelecionada"
-        @setOpen="(e) => (detalhesNoticiaModalEhAberto = e)"
+        @setOpen="fecharDetalhesNoticiaModal($event)"
       />
       <NotFound
         :title="$t('notfound_title')"
@@ -170,6 +170,13 @@ export default defineComponent({
     SplashScreen.hide();
   },
   methods: {
+    fecharDetalhesNoticiaModal(value: boolean) {
+      this.detalhesNoticiaModalEhAberto = value;
+      setTimeout(() => {
+        this.itemNoticiaSelecionado = {} as ItemNoticia;
+        this.resultadoScrapingNoticiaSelecionada = {} as ScrapingNoticia;
+      }, 200);
+    },
     async favoritar($event: any) {
       await this.favoritarNoticia($event);
       await this.atualizarQtdNoticiasFavoritas();
