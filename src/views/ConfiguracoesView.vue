@@ -45,7 +45,7 @@
                 <ion-select-option
                   v-for="opcao in opcoesIdioma"
                   :key="opcao.value"
-                  :value="opcao.value"
+                  :value="opcao.label"
                 >
                   {{ opcao.label }}
                 </ion-select-option>

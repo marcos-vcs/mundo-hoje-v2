@@ -32,4 +32,5 @@ export default {
   sobre_li_1: `Ícone "Página não encontrada" por`,
   sobre_li_2: `Ícone "Imagem quebrada" por`,
   sobre_titulo_4: "Links úteis",
+  compartilhar_noticia: "Compartilhar notícia",
 }

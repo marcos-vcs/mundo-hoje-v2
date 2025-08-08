@@ -4,6 +4,9 @@
       <ion-toolbar>
         <ion-title>{{ $t("detalhes_noticia") }}</ion-title>
         <ion-buttons slot="end">
+          <ion-button class="btn-size" @click.stop="compartilharNoticia">
+            <ion-icon :icon="shareSocialOutline" slot="icon-only" />
+          </ion-button>
           <ion-button @click="setOpen(false)">
             <ion-icon :icon="closeOutline" slot="icon-only"></ion-icon>
           </ion-button>
@@ -30,20 +33,11 @@
           <ion-col size="12">
             <ion-skeleton-text
               animated
-              style="width: 90%; height: 24px"
+              style="width: 100%; height: 50px"
             ></ion-skeleton-text>
             <ion-skeleton-text
               animated
-              style="width: 70%; height: 24px; margin-top: 8px"
-            ></ion-skeleton-text>
-          </ion-col>
-        </ion-row>
-
-        <ion-row class="ion-margin-top">
-          <ion-col size="6">
-            <ion-skeleton-text
-              animated
-              style="width: 60%; height: 14px"
+              style="width: 100%; height: 14px; margin-top: 10px"
             ></ion-skeleton-text>
           </ion-col>
         </ion-row>
@@ -77,7 +71,6 @@
             ></ion-skeleton-text>
           </ion-col>
         </ion-row>
-
         <ion-row class="ion-margin-top">
           <ion-col size="12">
             <ion-skeleton-text
@@ -86,11 +79,15 @@
             ></ion-skeleton-text>
             <ion-skeleton-text
               animated
-              style="width: 85%; height: 16px; margin-top: 8px"
+              style="width: 95%; height: 16px; margin-top: 8px"
             ></ion-skeleton-text>
             <ion-skeleton-text
               animated
-              style="width: 92%; height: 16px; margin-top: 8px"
+              style="width: 98%; height: 16px; margin-top: 8px"
+            ></ion-skeleton-text>
+            <ion-skeleton-text
+              animated
+              style="width: 60%; height: 16px; margin-top: 8px"
             ></ion-skeleton-text>
           </ion-col>
         </ion-row>
@@ -101,7 +98,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-import { closeOutline } from "ionicons/icons";
+import { closeOutline, shareSocialOutline } from "ionicons/icons";
 import {
   IonButtons,
   IonButton,
@@ -113,6 +110,7 @@ import {
 } from "@ionic/vue";
 import { ItemNoticia } from "@/models/itemNoticia";
 import { ScrapingNoticia } from "@/models/scrapingNoticia";
+import { Share } from "@capacitor/share";
 
 export default defineComponent({
   name: "DetalhesNoticiaModal",
@@ -147,12 +145,25 @@ export default defineComponent({
   data() {
     return {
       closeOutline: closeOutline,
+      shareSocialOutline: shareSocialOutline,
       loadingFoto: false,
     };
   },
   methods: {
     setOpen(value: boolean) {
       this.$emit("setOpen", value);
+    },
+    async compartilharNoticia() {
+      try {
+        await Share.share({
+          title: this.item.titulo,
+          text: this.item.introducao,
+          url: this.item.link,
+          dialogTitle: this.$t("compartilhar_noticia"),
+        });
+      } catch (error) {
+        console.error("Erro ao compartilhar:", error);
+      }
     },
   },
 });
@@ -176,5 +187,4 @@ h2 {
   border-radius: 8px;
   object-fit: cover;
 }
-
 </style>

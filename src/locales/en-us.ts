@@ -34,4 +34,5 @@ export default {
   sobre_li_1: `Icon "Page not found" by`,
   sobre_li_2: `Icon "Broken image" by`,
   sobre_titulo_4: "Useful links",
+  compartilhar_noticia: "Share news",
 };

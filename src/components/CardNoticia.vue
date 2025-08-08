@@ -105,7 +105,7 @@ export default defineComponent({
           title: this.item.titulo,
           text: this.item.introducao,
           url: this.item.link,
-          dialogTitle: "Compartilhar notícia", // título do diálogo no Android
+          dialogTitle: this.$t("compartilhar_noticia"),
         });
       } catch (error) {
         console.error("Erro ao compartilhar:", error);

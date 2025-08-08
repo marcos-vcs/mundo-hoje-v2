@@ -14,7 +14,7 @@
   <ion-text>
     <h2 class="titulo-1">
         <span>{{ $t('sobre_titulo_1') }} <strong>{{ $t('mundo_hoje') }}</strong>!</span>
-        <img src="../../dist/favicon.png" alt="Mundo hoje ícone" width="25px">
+        <img src="../../dist/favicon.png" alt="Mundo hoje ícone" width="35px">
     </h2>
     <p>
       {{ $t('sobre_paragrafo_1') }} 
